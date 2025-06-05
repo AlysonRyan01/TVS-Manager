@@ -49,3 +49,5 @@
     Além disso, foi adotado o padrão <strong>Command Query Separation (CQS)</strong> para organizar as operações, distinguindo 
     claramente os fluxos de leitura e escrita, resultando em um código mais coeso e de fácil manutenção.
 </p>
+
+![Sistema legado X Novo Sistema Web](ex.png)
