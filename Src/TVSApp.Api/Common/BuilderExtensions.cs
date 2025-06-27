@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using QuestPDF.Infrastructure;
 using TVS_App.Application.Handlers;
 using TVS_App.Application.Interfaces;
 using TVS_App.Domain.Repositories.Customers;
 using TVS_App.Domain.Repositories.Notifications;
 using TVS_App.Domain.Repositories.ServiceOrders;
+using TVS_App.Infrastructure.Configurations;
 using TVS_App.Infrastructure.Data;
 using TVS_App.Infrastructure.Models;
 using TVS_App.Infrastructure.Repositories.Customers;
@@ -18,6 +20,7 @@ using TVS_App.Infrastructure.Repositories.Notifications;
 using TVS_App.Infrastructure.Repositories.ServiceOrders;
 using TVS_App.Infrastructure.Security;
 using TVS_App.Infrastructure.Services;
+using TVS_App.Infrastructure.Services.Whatsapp;
 
 namespace TVS_App.Api.Common;
 
@@ -62,6 +65,8 @@ public static class BuilderExtensions
         builder.Services.AddScoped<CustomerHandler>();
         builder.Services.AddScoped<ServiceOrderHandler>();
         builder.Services.AddScoped<NotificationHandler>();
+        builder.Services.AddHttpClient<IWhatsappService, WhatsappService>();
+        builder.Services.Configure<EvolutionApiSettings>(builder.Configuration.GetSection("EvolutionApiSettings"));
     }
 
     public static void AddJwtService(this WebApplicationBuilder builder)
@@ -87,37 +92,40 @@ public static class BuilderExtensions
 
     public static void AddSwagger(this WebApplicationBuilder builder)
     {
-        builder.Services.AddEndpointsApiExplorer(); 
-
-        builder.Services.AddSwaggerGen(c =>
+        if (builder.Environment.IsDevelopment())
         {
-            c.SwaggerDoc("v1", new() { Title = "Sua API", Version = "v1" });
+            builder.Services.AddEndpointsApiExplorer(); 
 
-            c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            builder.Services.AddSwaggerGen(c =>
             {
-                Name = "Authorization",
-                Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-                Scheme = "Bearer",
-                BearerFormat = "JWT",
-                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                Description = "Insira o token JWT no formato: Bearer {seu_token}"
-            });
+                c.SwaggerDoc("v1", new() { Title = "Sua API", Version = "v1" });
 
-            c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-            {
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                 {
-                    new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                    Name = "Authorization",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Insira o token JWT no formato: Bearer {seu_token}"
+                });
+
+                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                {
                     {
-                        Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                         {
-                            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    new string[] {}
-                }
+                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                            {
+                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
             });
-        });
+        }
     }
     
     public static void AddCorsConfiguration(this WebApplicationBuilder builder)
@@ -139,5 +147,15 @@ public static class BuilderExtensions
                     .AllowCredentials();
             });
         });
+    }
+
+    public static void AddQuestPdfConfiguration(this WebApplicationBuilder builder)
+    {
+        QuestPDF.Settings.License = LicenseType.Community;
+    }
+
+    public static void AddSignalR(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddSignalR();
     }
 }

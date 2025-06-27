@@ -26,7 +26,7 @@ public partial class CreateServiceOrderPage : ComponentBase
 
     private async Task<IEnumerable<CustomerDto>> SearchCustomers(string? searchTerm, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(searchTerm) || searchTerm.Length < 3)
+        if (string.IsNullOrWhiteSpace(searchTerm))
             return Enumerable.Empty<CustomerDto>();
 
         try
@@ -92,13 +92,9 @@ public partial class CreateServiceOrderPage : ComponentBase
                 Snackbar.Add($"Erro: {createResult.Message}", Severity.Error);
             }
         }
-        catch (CommandException<CreateCustomerCommand> ex)
-        {
-            Snackbar.Add($"Validação: {ex.Message}", Severity.Warning);
-        }
         catch (Exception e)
         {
-            Snackbar.Add($"Erro: {e.Message}", Severity.Error);
+            Snackbar.Add(e.Message, Severity.Error);
         }
         finally
         {
