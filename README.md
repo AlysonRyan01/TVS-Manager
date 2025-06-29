@@ -50,4 +50,10 @@
     claramente os fluxos de leitura e escrita, resultando em um código mais coeso e de fácil manutenção.
 </p>
 
-![Sistema legado X Novo Sistema Web](ex.png)
+<img src="ex.png" alt="Antes e depois" />
+<img src="auth.png" alt="Endpoints de autenticação e autorização" />
+<img src="customer.png" alt="Endpoints de clientes" />
+<img src="serviceOrder.png" alt="Endpoints de ordens de serviço" />
+<img src="notifications.png" alt="Endpoints de notificações" />
+
+
