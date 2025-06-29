@@ -98,7 +98,7 @@ public static class BuilderExtensions
 
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new() { Title = "Sua API", Version = "v1" });
+                c.SwaggerDoc("v1", new() { Title = "TVS APP - API", Version = "v1" });
 
                 c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                 {
